@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">   
+    <title>Scheduler Image Uploader</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">     -->
+    <link rel="stylesheet" href="src/bootstrap.min.css">    
+
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet">     -->
+
+    <script src="src/jquery.min.js"></script>
+    <script src="src/bootstrap.min.js"></script>
+    <script src="src/sweetalert2.all.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.7.1/dist/sweetalert2.all.min.js"></script> -->
+    <style type="text/css" media="">
+    .jumbotron.small {
+      padding: 1rem 1rem;
+    }
+    
+    hr.divider { 
+      margin: 0.1rem;
+    } 
+
+    /* Default test chart height of 220px. */
+    body {
+      margin:0;
+      padding:0;
+      background-color: black;
+    }
+
+    .input-group-addon {
+      padding: .5rem .75rem;
+      margin-bottom: 0;
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.25;
+      color: #495057;
+      text-align: center;
+      background-color: #e9ecef;
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: .25rem;      
+    }
+
+    </style>
+  </head>
+  <body id="body" style="background-color: white;">
+    <div class="container">
+      <div class="row d-flex justify-content-center mt-4">
+        <!-- <div class="col-sm-4 col-lg-4 col-12 text-left">
+          <img src="logo.png" class="" style="width: 120px;">
+        </div> -->
+
+        <div class="col-sm-6 col-lg-6 col-8 text-center">
+          <h3>UPLOAD BINARIES TO SCHEDULER</h3>
+        </div>
+        
+        <!-- <div class="col-sm-4 col-lg-4 col-4 text-right">
+          <a href="/"><em class="text-dark fas fa-home fa-2x" title="Home"></em></a>
+        </div> -->
+      </div>      
+
+      <div class="jumbotron bg-light mb-0">
+        <fieldset>
+          <legend>Update Firmware</legend>
+          <form class="" method="POST" action="/firmware" enctype="multipart/form-data">
+            <div class="input-group">  
+              <div class="custom-file">  
+                  <input type="file" class="custom-file-input" name="update" id="updatefirmware" accept=".bin">  
+                  <label class="custom-file-label" for="updatefirmware" id="firmwarefile">Choose Firmware Image...</label>  
+              </div>  
+              <div class="input-group-append">  
+                  <input type='submit' class="input-group-text" value='Update'>
+              </div>  
+            </div> 
+            <script>
+              $('#updatefirmware').change((e) => { 
+                if(e.target.files.length === 0) return;
+                const fileName = e.target.files[0].name;
+                $('#firmwarefile').html(fileName);
+              });               
+            </script>
+          </form>
+        </fieldset>
+        <hr>
+        <fieldset>
+          <legend>Update HTML Templates</legend>
+          <form class="" method="POST" action="/spiffs" enctype="multipart/form-data">
+            <div class="input-group">  
+              <div class="custom-file">  
+                  <input type="file" class="custom-file-input" name="update" id="updatedata" accept=".bin">  
+                  <label class="custom-file-label" for="updatedata" id="datafile">Choose Data Image ...</label>  
+              </div>  
+              <div class="input-group-append">  
+                  <input type='submit' class="input-group-text" value='Update'>
+              </div>  
+            </div> 
+            <script>
+              $('#updatedata').change((e) => { 
+                if(e.target.files.length === 0) return;
+                const fileName = e.target.files[0].name;
+                $('#datafile').html(fileName);
+              });               
+            </script>
+          </form>
+        </fieldset>
+      </div>
+
+      <footer class="footer">
+        <span class="text-dark">@ 2020 Kieran</span>
+      </footer>
+    </div>
+
+    <script>
+      $(document ).ready(function() {
+      });
+    </script> 
+  </body>
+</html>

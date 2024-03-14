@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monitor & Configure System</title>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">     -->
+    <link rel="stylesheet" href="src/bootstrap.min.css">
+
+    <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet">     -->
+
+    <script src="src/jquery.min.js"></script>
+
+    <link href="src/bootstrap4-toggle.min.css" rel="stylesheet">
+    <script src="src/bootstrap4-toggle.min.js"></script>
+
+    <script src="src/bootstrap.min.js"></script>
+    <script src="src/sweetalert2.all.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.7.1/dist/sweetalert2.all.min.js"></script> -->
+
+    <!-- <script src="src/moment.min.js"></script> -->
+    </style>
+</head>
+
+<body id="body" style="background-color: white;">
+    <div class="container">
+        <div class="row d-flex justify-content-center mt-4">
+            <div class="col-12 text-center">
+                <h3>Chicken Coop Opener</h3>
+            </div>
+        </div>
+
+        <div class="jumbotron small mb-0">
+            <form method="POST">
+                <div class="form-group row">
+                    <label for="device-time" class="col-form-label col-sm-2 text-left">Date & Time:</label>
+                    <div class="input-group col-sm-5">
+                        <input type="datetime-local" class="form-control" id="device-time" disabled />
+                    </div>
+                    <div class="input-group col-sm-5">
+                        <input type="datetime-local" class="form-control" id="local-time" />
+                        <div class="input-group-append">
+                            <input type="button" class="input-group-text h4" id="sync-time-btn" value="Sync" />
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            </form>
+
+            <form id="chosen_mode">
+                <legend class="col-form-label h1">Choose Mode</legend>
+                <fieldset>
+                    <div class="form-group row col-12">
+                        <div class="form-check col-sm-4 col-4">
+                            <input class="form-check-input" type="radio" name="mode" id="test-mode" value="1">
+                            <label class="form-check-label" for="test-mode">
+                  Test Mode
+                </label>
+                        </div>
+
+                        <div class="form-check col-sm-4 col-4">
+                            <input class="form-check-input" type="radio" name="mode" id="rtc-only" value="2">
+                            <label class="form-check-label" for="rtc-only">
+                  Clock Only
+                </label>
+                        </div>
+
+                        <div class="form-check col-sm-4 col-4">
+                            <input class="form-check-input" type="radio" name="mode" id="rtc-ldr" value="3">
+                            <label class="form-check-label" for="rtc-ldr">
+                  Clock & LDR
+                </label>
+                        </div>
+                    </div>
+                    <hr>
+                </fieldset>
+            </form>
+
+            <form>
+                <legend class="col-form-label h1">Motors & Proximity Sensors</legend>
+                <fieldset>
+                    <div class="form-group row col-12 text-center">
+                        <div class="col-sm-4 col-12 mt-2 text-center">
+                            <input type="checkbox" id="opened-prox" data-toggle="toggle" data-on="DOOR OPEN" data-off="DOOR OPEN" data-onstyle="danger" data-offstyle="secondary">
+                            <div class="mt-2">Door Open Sensor</div>
+                        </div>
+
+                        <div class="col-sm-4 col-12 mt-2 text-center">
+                            <input type="checkbox" id="in-transit" data-toggle="toggle" data-on="IN TRANSIT" data-off="IN TRANSIT" data-onstyle="warning" data-offstyle="secondary">
+                        </div>
+
+                        <div class="col-sm-4 col-12 mt-2 text-center">
+                            <input type="checkbox" id="closed-prox" data-toggle="toggle" data-on="DOOR CLOSED" data-onstyle="success" data-off="DOOR CLOSED" data-offstyle="secondary">
+                            <div class="mt-2">Door Close Sensor</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row col-12 text-center">
+                        <div class="col-sm-4 col-4 mt-2 text-center output-toggle" data-name="forward-toggle">
+                            <input type="checkbox" id="forward-toggle" data-toggle="toggle" data-on="Opening" data-off="Stopped" data-onstyle="warning" data-offstyle="secondary">
+                        </div>
+
+                        <div class="col-sm-4 col-4 mt-2 text-center output-toggle" data-name="alert-led">
+                            <input type="checkbox" id="alert-led" data-toggle="toggle" data-on="Alert LED On" data-off="Alert LED Off" data-onstyle="danger" data-offstyle="dark">
+                        </div>
+
+                        <div class="col-sm-4 col-4 mt-2 text-center output-toggle" data-name="backward-toggle">
+                            <input type="checkbox" id="backward-toggle" data-toggle="toggle" data-on="Closing" data-off="Stopped" data-onstyle="warning" data-offstyle="secondary">
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <form method="POST" action="/ldrthreshold">
+                <legend class="col-form-label h1">Light Threshold Setting</legend>
+                <fieldset>
+                    <div class="form-group row col-12 form-inline">
+                        <label for="real-ldr" class="col-sm-2 col-6 text-center">Actual LDR</label>
+                        <input type="text" id="real-ldr" class="form-control col-sm-3 col-6" aria-describedby="ldr-inline" disabled>
+                        <small id="ldr-inline" class="text-muted col-sm-2 col-12 text-right">
+                Maximum value is 4096 (12bit)
+              </small>
+                        <label for="threshold-setting" class="col-sm-2 col-6 text-center">LDR Setpoint</label>
+                        <input type="text" id="threshold-setting" class="form-control col-sm-3 col-6" name="ldrthreshold">
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <div class="form-group row btn-group btn-group-lg float-right">
+                        <button type="submit" class="btn btn-primary">Save Config</button>
+                        <button type="button" id="reset-button" class="btn btn-primary">Reset Alarm</button>
+                    </div>
+                    <hr>
+                </fieldset>
+            </form>
+
+            <form method="POST" action="/schedule">
+                <legend class="col-form-label h1">Schedules</legend>
+                <fieldset>
+                    <div class="form-check row col-sm-4 col-8 float-right mb-2">
+                        <input class="form-check-input" type="checkbox" name="oneday_schedule" id="check-allday" value="true">
+                        <label class="form-check-label" for="check-allday">Same schedule for all day</label>
+                    </div>
+                </fieldset>
+
+                </fieldset>
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2">Sunday</legend>
+                    <label for="sunday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="sunday-wakeup-time" name="weekOfDays[0][wakeup]">
+                    </div>
+                    <label for="sunday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="sunday-sleep-time" name="weekOfDays[0][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Monday</legend>
+                    <label for="monday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="monday-wakeup-time" name="weekOfDays[1][wakeup]">
+                    </div>
+                    <label for="monday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="monday-sleep-time" name="weekOfDays[1][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Tuesday</legend>
+                    <label for="tuesday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="tuesday-wakeup-time" name="weekOfDays[2][wakeup]">
+                    </div>
+                    <label for="tuesday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="tuesday-sleep-time" name="weekOfDays[2][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Wednesday</legend>
+                    <label for="wednesday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="wednesday-wakeup-time" name="weekOfDays[3][wakeup]">
+                    </div>
+                    <label for="wednesday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="wednesday-sleep-time" name="weekOfDays[3][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Thursday</legend>
+                    <label for="thursday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="thursday-wakeup-time" name="weekOfDays[4][wakeup]">
+                    </div>
+                    <label for="thursday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="thursday-sleep-time" name="weekOfDays[4][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Friday</legend>
+                    <label for="friday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="friday-wakeup-time" name="weekOfDays[5][wakeup]">
+                    </div>
+                    <label for="friday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="friday-sleep-time" name="weekOfDays[5][sleep]">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <legend class="col-form-label col-sm-2 col-12">Saturday</legend>
+                    <label for="saturday-wakeup-time" class="text-right col-sm-2 col-4 col-form-label">Sunrise at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="saturday-wakeup-time" name="weekOfDays[6][wakeup]">
+                    </div>
+                    <label for="saturday-sleep-time" class="text-right col-sm-2 col-4 col-form-label">Sunset at:</label>
+                    <div class="col-sm-3 col-8">
+                        <input type="time" class="form-control" id="saturday-sleep-time" name="weekOfDays[6][sleep]">
+                    </div>
+                </div>
+                </fieldset>
+                <fieldset>
+                    <div class="form-group row btn-group btn-group-lg float-right">
+                        <button type="submit" class="btn btn-primary">Update Schedule</button>
+                        <button type="button" class="btn btn-primary" id="home-button">Home</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+
+        <footer class="footer">
+            <span class="text-dark">@ 2020 Kieran</span>
+        </footer>
+    </div>
+
+    <script>
+        Date.prototype.toDatetimeLocal =
+            function toDatetimeLocal() {
+                var
+                    date = this,
+                    ten = function(i) {
+                        return (i < 10 ? '0' : '') + i;
+                    },
+                    YYYY = date.getFullYear(),
+                    MM = ten(date.getMonth() + 1),
+                    DD = ten(date.getDate()),
+                    HH = ten(date.getHours()),
+                    II = ten(date.getMinutes()),
+                    SS = ten(date.getSeconds());
+                return YYYY + '-' + MM + '-' + DD + 'T' +
+                    HH + ':' + II + ':' + SS;
+            };
+
+        Date.prototype.fromDatetimeLocal = (function(BST) {
+            // BST should not be present as UTC time
+            return new Date(BST).toISOString().slice(0, 16) === BST ?
+                // if it is, it needs to be removed
+                function() {
+                    return new Date(
+                        this.getTime() +
+                        (this.getTimezoneOffset() * 60000)
+                    ).toISOString();
+                } :
+                // otherwise can just be equivalent of toISOString
+                Date.prototype.toISOString;
+        }('2006-06-06T06:06'));
+
+        $(document).ready(function() {
+            $(update_time = () => {
+                $(`#local-time`).val(new Date().toDatetimeLocal());
+                // console.log(Math.round(Date.now() / 1000));
+                // console.log(Math.round(new Date($(`#local-time`).val()) / 1000));
+                setTimeout(update_time, 1000);
+            });
+
+            $.get('/readconf', // url
+                function(data, textStatus, jqXHR) { // success callback
+                    const config = JSON.parse(data);
+                    console.log(config);
+
+                    // Showing page
+                    const WeekOfDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                    config.weekOfDays.forEach(function(day, index, array) {
+                        console.log(day, index);
+                        $(`#${WeekOfDays[index]}-wakeup-time`).val(`${String(day.wakehour).padStart(2, '0')}:${String(day.wakemin).padStart(2, '0')}`);
+                        $(`#${WeekOfDays[index]}-sleep-time`).val(`${String(day.sleephour).padStart(2, '0')}:${String(day.sleepmin).padStart(2, '0')}`);
+                    });
+
+                    $(`#threshold-setting`).val(config.ldrthreshold);
+                    switch (config.mode) {
+                        case 1:
+                            $("#test-mode").prop("checked", true);
+                            break;
+
+                        case 2:
+                            $("#rtc-only").prop("checked", true);
+                            break;
+
+                        case 3:
+                            $("#rtc-ldr").prop("checked", true);
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if (config.same_schedule) {
+                        $(`#monday-wakeup-time`).attr("disabled", true);
+                        $(`#monday-sleep-time`).attr("disabled", true);
+                        $(`#tuesday-wakeup-time`).attr("disabled", true);
+                        $(`#tuesday-sleep-time`).attr("disabled", true);
+                        $(`#wednesday-wakeup-time`).attr("disabled", true);
+                        $(`#wednesday-sleep-time`).attr("disabled", true);
+                        $(`#thursday-wakeup-time`).attr("disabled", true);
+                        $(`#thursday-sleep-time`).attr("disabled", true);
+                        $(`#friday-wakeup-time`).attr("disabled", true);
+                        $(`#friday-sleep-time`).attr("disabled", true);
+                        $(`#saturday-wakeup-time`).attr("disabled", true);
+                        $(`#saturday-sleep-time`).attr("disabled", true);
+
+                        $(`#check-allday`).prop(`checked`, true);
+
+                    } else {
+                        $(`#monday-wakeup-time`).attr("disabled", false);
+                        $(`#monday-sleep-time`).attr("disabled", false);
+                        $(`#tuesday-wakeup-time`).attr("disabled", false);
+                        $(`#tuesday-sleep-time`).attr("disabled", false);
+                        $(`#wednesday-wakeup-time`).attr("disabled", false);
+                        $(`#wednesday-sleep-time`).attr("disabled", false);
+                        $(`#thursday-wakeup-time`).attr("disabled", false);
+                        $(`#thursday-sleep-time`).attr("disabled", false);
+                        $(`#friday-wakeup-time`).attr("disabled", false);
+                        $(`#friday-sleep-time`).attr("disabled", false);
+                        $(`#saturday-wakeup-time`).attr("disabled", false);
+                        $(`#saturday-sleep-time`).attr("disabled", false);
+                        $(`#check-allday`).prop(`checked`, false);
+                    }
+                });
+
+            const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+            const async_read_vars = async() => {
+                await delay(1000);
+                try {
+                    const result = await $.ajax({
+                        url: '/realvars',
+                        type: 'GET',
+                    });
+                    const vars = JSON.parse(result);
+                    console.log(vars);
+
+                    $(`#closed-prox`).bootstrapToggle('enable');
+                    if (Boolean(vars.closed_prox)) {
+                        $(`#closed-prox`).bootstrapToggle('on', true);
+                    } else {
+                        $(`#closed-prox`).bootstrapToggle('off', true);
+                    }
+                    $(`#closed-prox`).bootstrapToggle('disable');
+
+                    $(`#opened-prox`).bootstrapToggle('enable');
+                    if (Boolean(vars.opened_prox)) {
+                        $(`#opened-prox`).bootstrapToggle('on', true);
+                    } else {
+                        $(`#opened-prox`).bootstrapToggle('off', true);
+                    }
+                    $(`#opened-prox`).bootstrapToggle('disable');
+
+                    const chosen_mode = parseInt($("input[name='mode']:checked").val());
+                    $(`#alert-led`).bootstrapToggle('enable');
+                    if (Boolean(vars.alert_led)) {
+                        $(`#alert-led`).bootstrapToggle('on', true);
+                    } else {
+                        $(`#alert-led`).bootstrapToggle('off', true);
+                    }
+                    if (chosen_mode > 1)
+                        $(`#alert-led`).bootstrapToggle('disable');
+
+                    switch (vars.motor_direction) {
+                        case 0:
+                            {
+                                $(`#backward-toggle`).bootstrapToggle('enable');
+                                $(`#backward-toggle`).bootstrapToggle('off', true);
+                                $(`#forward-toggle`).bootstrapToggle('enable');
+                                $(`#forward-toggle`).bootstrapToggle('off', true);
+
+                                $(`#in-transit`).bootstrapToggle('enable');
+                                $(`#in-transit`).bootstrapToggle('off', true);
+                                $(`#in-transit`).bootstrapToggle('disable');
+                            }
+                            break;
+
+                        case 1:
+                            {
+                                $(`#backward-toggle`).bootstrapToggle('enable');
+                                $(`#backward-toggle`).bootstrapToggle('off', true);
+                                $(`#forward-toggle`).bootstrapToggle('enable');
+                                $(`#forward-toggle`).bootstrapToggle('on', true);
+
+                                $(`#in-transit`).bootstrapToggle('enable');
+                                $(`#in-transit`).bootstrapToggle('on', true);
+                                $(`#in-transit`).bootstrapToggle('disable');
+                            }
+                            break;
+
+                        case 2:
+                            {
+                                $(`#backward-toggle`).bootstrapToggle('enable');
+                                $(`#backward-toggle`).bootstrapToggle('on', true);
+                                $(`#forward-toggle`).bootstrapToggle('enable');
+                                $(`#forward-toggle`).bootstrapToggle('off', true);
+
+                                $(`#in-transit`).bootstrapToggle('enable');
+                                $(`#in-transit`).bootstrapToggle('on', true);
+                                $(`#in-transit`).bootstrapToggle('disable');
+                            }
+                            break;
+                    }
+
+                    if (chosen_mode > 1) {
+                        $(`#forward-toggle`).bootstrapToggle('disable');
+                        $(`#backward-toggle`).bootstrapToggle('disable');
+                    }
+
+                    $('#real-ldr').val(vars.realldr);
+                } catch (err) {
+                    console.log(`Failed from GET API ${err}`);
+                }
+                await async_read_vars();
+            }
+            async_read_vars();
+
+            const read_systemtime = async() => {
+                await delay(5000);
+                try {
+                    const result = await $.ajax({
+                        url: '/systemtime',
+                    });
+                    $(`#device-time`).val(result);
+                } catch (err) {
+                    console.log(`Failed from GET API ${err}`);
+                }
+                await read_systemtime();
+            };
+            read_systemtime();
+
+            $('#chosen_mode').change(async function() {
+                const chosen_mode = $("input[name='mode']:checked").val();
+                try {
+                    const result = await $.ajax({
+                        url: '/mode',
+                        type: 'POST',
+                        data: {
+                            mode: parseInt(chosen_mode)
+                        },
+                    });
+                    window.location.href = `/monitor`;
+                } catch (err) {
+                    console.log(err);
+                }
+            });
+
+            $(`#check-allday`).change(function() {
+                if (this.checked) {
+                    $(`#monday-wakeup-time`).attr("disabled", true);
+                    $(`#monday-sleep-time`).attr("disabled", true);
+                    $(`#tuesday-wakeup-time`).attr("disabled", true);
+                    $(`#tuesday-sleep-time`).attr("disabled", true);
+                    $(`#wednesday-wakeup-time`).attr("disabled", true);
+                    $(`#wednesday-sleep-time`).attr("disabled", true);
+                    $(`#thursday-wakeup-time`).attr("disabled", true);
+                    $(`#thursday-sleep-time`).attr("disabled", true);
+                    $(`#friday-wakeup-time`).attr("disabled", true);
+                    $(`#friday-sleep-time`).attr("disabled", true);
+                    $(`#saturday-wakeup-time`).attr("disabled", true);
+                    $(`#saturday-sleep-time`).attr("disabled", true);
+                } else {
+                    $(`#monday-wakeup-time`).attr("disabled", false);
+                    $(`#monday-sleep-time`).attr("disabled", false);
+                    $(`#tuesday-wakeup-time`).attr("disabled", false);
+                    $(`#tuesday-sleep-time`).attr("disabled", false);
+                    $(`#wednesday-wakeup-time`).attr("disabled", false);
+                    $(`#wednesday-sleep-time`).attr("disabled", false);
+                    $(`#thursday-wakeup-time`).attr("disabled", false);
+                    $(`#thursday-sleep-time`).attr("disabled", false);
+                    $(`#friday-wakeup-time`).attr("disabled", false);
+                    $(`#friday-sleep-time`).attr("disabled", false);
+                    $(`#saturday-wakeup-time`).attr("disabled", false);
+                    $(`#saturday-sleep-time`).attr("disabled", false);
+                }
+            });
+
+            $('.output-toggle').click(async function() {
+                const toggle_identify = $(this).attr('data-name');
+                if (!toggle_identify) return;
+                if (parseInt($("input[name='mode']:checked").val()) > 1)
+                    return;
+                if (toggle_identify === `alert-led`) {
+                    var toggle = false;
+                    if ($(`#${toggle_identify}`).prop('checked') === true) toggle = false;
+                    else toggle = true;
+                    try {
+                        const result = await $.ajax({
+                            url: '/redled',
+                            type: 'POST',
+                            data: {
+                                led: toggle
+                            },
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
+                } else if (toggle_identify === `forward-toggle`) {
+                    var direction = 0;
+                    if ($(`#${toggle_identify}`).prop('checked') === true) {
+                        direction = 0;
+                    } else {
+                        direction = 1;
+                    }
+                    try {
+                        const result = await $.ajax({
+                            url: '/motor',
+                            type: 'POST',
+                            data: {
+                                motor_direction: direction
+                            },
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
+                } else if (toggle_identify === `backward-toggle`) {
+                    var direction = 0;
+                    if ($(`#${toggle_identify}`).prop('checked') === true) {
+                        direction = 0;
+                    } else {
+                        direction = 2;
+                    }
+                    try {
+                        const result = await $.ajax({
+                            url: '/motor',
+                            type: 'POST',
+                            data: {
+                                motor_direction: direction
+                            },
+                        });
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+            });
+
+            $(`#reset-button`).click(async() => {
+                const {
+                    value: confimred
+                } = await Swal.fire({
+                    title: `Exit`,
+                    text: `You are going to reset alert, Are you sure?`,
+                    icon: `warning`,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                    showCancelButton: true,
+                });
+                if (!confimred) {
+                    return;
+                }
+                $.post(`/resetalert`, null, response = () => {
+                    console.log(response);
+                });
+            });
+
+            $(`#home-button`).click(() => {
+                window.location.href = `/`;
+            });
+
+            $(`#sync-time-btn`).click(async() => {
+                // console.log(moment.utc(new Date($(`#local-time`).val())).valueOf() / 1000);
+                const synctime_epoch = Math.round(new Date($(`#local-time`).val()) / 1000);
+                // const synctime_epoch = moment.utc(new Date($(`#local-time`).val())).valueOf() / 1000;
+                console.log(synctime_epoch);
+                const {
+                    value: confimred
+                } = await Swal.fire({
+                    title: `Exit`,
+                    text: `You are going to set time, Are you sure?`,
+                    icon: `warning`,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No',
+                    showCancelButton: true,
+                });
+                if (!confimred) {
+                    return;
+                }
+
+                try {
+                    const result = await $.ajax({
+                        url: '/synctime',
+                        type: 'POST',
+                        data: {
+                            time: synctime_epoch
+                        }
+                    });
+                } catch (error) {
+                    window.location.href = `/monitor`;
+                }
+            });
+
+            // $("#show_hide_password a").on('click', function(event) {
+            //   event.preventDefault();
+            //   if($('#show_hide_password input').attr("type") == "text"){
+            //       $('#show_hide_password input').attr('type', 'password');
+            //       $('#show_hide_password i').addClass( "fa-eye-slash" );
+            //       $('#show_hide_password i').removeClass( "fa-eye" );
+            //   }else if($('#show_hide_password input').attr("type") == "password"){
+            //       $('#show_hide_password input').attr('type', 'text');
+            //       $('#show_hide_password i').removeClass( "fa-eye-slash" );
+            //       $('#show_hide_password i').addClass( "fa-eye" );
+            //   }
+            // });        
+        });
+    </script>
+</body>
+
+</html>

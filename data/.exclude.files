@@ -1,0 +1,10 @@
+/*.js.gz
+/*.gz
+/.exclude.files
+/src/*.*
+/*.htm
+/*.html
+/*.ico
+/*.png
+/logo.*
+/*.js
