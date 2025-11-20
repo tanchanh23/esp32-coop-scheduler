@@ -506,7 +506,7 @@ void loop()
         else if (!control_machine.isInState(alert) &&
                  !control_machine.isInState(stopped))
         {
-            debugA("Transition to stopped ");
+            // debugA("Transition to stopped ");
             control_machine.transitionTo(stopped);
         }
     }
